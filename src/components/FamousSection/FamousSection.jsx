@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './FamousSection.css';
 
 function FamousSection() {
@@ -8,9 +9,25 @@ function FamousSection() {
 
   // TODO: on load, call the fetchPeople() function
 
-  const fetchPeople = () => {
-    // TODO: fetch the list of people from the server
+  const fetchPeople = () => { // TODO: fetch the list of people from the server
+    axios({
+      method: 'GET',
+      url: '/api/people'
+    })
+    .then(response => {
+      console.log('Data array in reponse from server.', response.data);
+      famousPeopleArray=response.data;
+      setPeopleArray(famousPeopleArray);
+    })
+    .catch(err => {
+      console.log('GET error form server.', err);
+    })
   }
+
+  useEffect(
+    fetchPeople, []
+  );
+
 
   const addPerson = (evt) => {
     evt.preventDefault();
