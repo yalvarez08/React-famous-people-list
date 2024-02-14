@@ -6,6 +6,8 @@ function FamousSection() {
   let [famousPersonName, setPersonName] = useState('');
   let [famousPersonRole, setPersonRole] = useState('');
   let [famousPeopleArray, setPeopleArray] = useState([]);
+  let [newFamousPerson, setNewFamousPerson] = useState('');
+  let [newRole, setNewRole] = useState('');
 
   // TODO: on load, call the fetchPeople() function
 
@@ -20,7 +22,7 @@ function FamousSection() {
       setPeopleArray(famousPeopleArray);
     })
     .catch(err => {
-      console.log('GET error form server.', err);
+      console.log('GET error from server.', err);
     })
   }
 
@@ -31,12 +33,25 @@ function FamousSection() {
 
   const addPerson = (evt) => {
     evt.preventDefault();
-    console.log(`The person is ${famousPersonName} and they're famous for ${famousPersonRole}`);
+    console.log(`The person is ${newFamousPerson} and they're famous for ${newRole}`);
     
     // TODO: create POST request to add this new person to the database
-
     // HINT: the server is expecting a person object 
     //       with a `name` and a `role` property
+    axios ({
+      method: 'POST',
+      url: '/api/people',
+      data: {name: newFamousPerson, role: newRole}
+    })
+    .then(response => {
+      console.log('POST response from server:', response);
+      setNewFamousPerson('');
+      setNewRole('');
+      fetchPeople();
+    })
+    .catch(err => {
+      console.log('POST error from the server.', err);
+    })
   
   }
 
@@ -44,16 +59,18 @@ function FamousSection() {
       <section className="new-person-section">
         <form onSubmit={addPerson}>
           <label htmlFor="name-input">Name:</label>
-          <input id="name-input" onChange={e => setPersonName(e.target.value)} />
+          <input id="name-input" value={newFamousPerson} onChange={e => setNewFamousPerson(e.target.value)} />
           <label htmlFor="role-input">Famous for:</label>
-          <input id="role-input" onChange={e => setPersonRole(e.target.value)} />
+          <input id="role-input" value={newRole} onChange={e => setNewRole(e.target.value)} />
           <button type="submit">Done</button>
         </form>
         <p>
           {famousPersonName} is famous for "{famousPersonRole}".
         </p>
         <ul>
-          {/* TODO: Render the list of famous people */}
+          {famousPeopleArray.map(person => (
+            <li key={person.id}>{person.name} is famous for playing a role in {person.role}.</li> 
+          ))}
         </ul>
       </section>
     );
